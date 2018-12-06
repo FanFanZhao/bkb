@@ -1,0 +1,159 @@
+<template>
+  <div class="home flex">
+    <div class="home-l">
+      <div class="tv-box">
+        <!-- <tv-top></tv-top> -->
+        <tv></tv>
+        <!-- <market></market> -->
+      </div>
+      <div class="entrusts">
+        <div class="tab-entrust">
+          <span :class="{active:whichEntrust == 'entrust'}" @click="whichEntrust = 'entrust'">当前委托</span>
+          <span
+            :class="{active:whichEntrust == 'hisentrust'}"
+            @click="whichEntrust = 'hisentrust'"
+          >历史委托</span>
+          <!-- <div class="kb">2kb奖金余量：{{kb}}</div> -->
+        </div>
+        <div class="scroll">
+          <div class="entrust-box" v-if="whichEntrust == 'entrust'">
+            <entrust></entrust>
+          </div>
+          <div class="histentrust-box" v-if="whichEntrust == 'hisentrust'">
+            <hisentrust></hisentrust>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="home-r">
+      <div class="home-r-t flex">
+        <div class="exchage-box">
+          <exchange></exchange>
+        </div>
+        <div class="complete-box">
+          <complete></complete>
+        </div>
+      </div>
+      <div class="home-r-b">
+        <trade></trade>
+      </div>
+    </div>
+  </div>
+</template>
+
+<script>
+import indexHeader from "@/view/indexHeader";
+import notice from "@/components/noticeList";
+import deal from "@/view/deal";
+import exchange from "@/view/exchange";
+// import market from "@/view/market";
+import trade from "@/view/trade";
+import chart from "@/view/chart";
+import entrust from "@/view/entrust";
+import hisentrust from "@/view/hisentrust";
+// import detail from "@/view/detail";
+import currency from "@/view/currency";
+import complete from "@/view/complete";
+// import kline from "@/view/kline";
+import tv from "@/view/tv";
+// import TvTop from '../view/tvTop'
+export default {
+  name: "dealCenter",
+  components: {
+    indexHeader,
+    load: 1,
+    notice,
+    deal,
+    exchange,
+    // market,
+    trade,
+    chart,
+    entrust,
+    hisentrust,
+    // detail,
+    currency,
+    complete,
+    // TvTop,
+    // kline,
+    tv
+  },
+  data() {
+    return {
+      isRouterAlive: true,
+      whichEntrust: "entrust",
+      token: "",
+      kb: ""
+    };
+  },
+  created() {
+    this.token = localStorage.getItem("token") || "";
+
+    // this.getKb();
+    // console.log(this.address)
+  },
+  methods: {
+    getKb() {
+      this.$http({
+        url: "/api/transaction/get_surplus_2kb"
+        // headers:{Authorization:this.token}
+      }).then(res => {
+        console.log(res.data.message);
+        if (res.data.type == "ok") {
+          var kb = res.data.message;
+          if (kb != this.kb) {
+            this.kb = res.data.message;
+          }
+        }
+      });
+    }
+  },
+  mounted() {}
+};
+</script>
+
+<style scoped lang="scss">
+.home {
+  .tab-entrust {
+    position: relative;
+    
+  }
+  margin-top: 3px;
+  justify-content: space-between;
+  height: 100%;
+  > .home-l {
+    width: calc(100% - 683px);
+    > .entrusts {
+      margin-top: 3px;
+      padding: 0 15px;
+      height: 385px;
+      > .tab-entrust {
+        font-size: 14px;
+        line-height: 1.6;
+        height: 30px;
+        span {
+          margin-right: 14px;
+          line-height: 30px;
+        }
+        .active {
+          // border-bottom: 1px solid #303b4b;
+        }
+      }
+    }
+  }
+  > .home-r {
+    width: 680px;
+    > .home-r-t {
+      justify-content: space-between;
+      min-height: 220px;
+      max-height: calc(100% - 360px);
+      > div {
+        width: 338px;
+      }
+    }
+    > .home-r-b {
+      margin-top: 3px;
+      height: 360px;
+    }
+  }
+}
+</style>
